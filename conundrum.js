@@ -46,6 +46,16 @@ conundrum.shuffle = function () {
 	conundrum.newWord();
 }
 
+conundrum.addHistory = function (entry) {
+	var div = document.createElement("div");
+	div.textContent = entry;
+	conundrum.history.appendChild(div);
+	var divs = conundrum.history.getElementsByTagName("div");
+	for (var i = 0; i < divs.length - 10; i++){
+		conundrum.history.removeChild(divs[i]);
+	}
+}
+
 // main function
 
 function main() {

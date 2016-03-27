@@ -6,6 +6,7 @@ body {
 	height: 100vh;
 	background: #f4f4f4;
 	text-align: center;
+	padding: 0 5%;
 }
 
 .loading { display: none; }
@@ -18,7 +19,7 @@ body {
 	overflow-y: hidden;
 }
 
-#display { flex: none; }
+#display { flex: 1; }
 
 .letter {
 	background: white;
@@ -30,11 +31,10 @@ body {
 	box-shadow: 0 0 0.1em 1px #444;
 }
 
-form { font-size: 1.5em; display: flex; }
+form { font-size: 1.5em; display: flex; margin-bottom: 0.5em;}
 
 input { width: 100%; }
-
-
-button { font-size: 2em; }
-
 #clear { font-size: inherit; }
+
+#controls{ display: flex; font-size: 2em; }
+#score { flex: auto; }

@@ -7,7 +7,22 @@
 	<script type="text/javascript" src="conundrum.js"></script>
 </head>
 <body class="loading">
+	<header>
+		<h1>Conundrum</h1>
+		<p>Make as many words using the given letters below.</p>
+		<p>There will always be at least one nine-letter word.</p>
+	</header>
 	<aside id="history">
+			<div></div>
+			<div></div>
+			<div></div>
+			<div></div>
+			<div></div>
+			<div></div>
+			<div></div>
+			<div></div>
+			<div></div>
+			<div></div>
 	</aside>
 	<main id="display">
 		<h1><span class="letter"></span>
@@ -23,8 +38,11 @@
 			<input id="entry" type="text" autofocus>
 			<button id="clear" title="Clear">❌</button>
 		</form>
-		<button id="shuffle" title="Reorder letters">↭</button>
-		<button id="reset" title="New conundrum">⟳</button>
+		<div id="controls">
+			<button id="shuffle" title="Reorder letters">↭</button>
+			<div id="score">0</div>
+			<button id="reset" title="New conundrum">⟳</button>
+		</div>
 	</main>
 </body>
 
