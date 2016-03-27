@@ -76,7 +76,7 @@ function getWordList () {
 }
 
 function gotWordList() {
-	localStorage.setItem("words", string);
+	localStorage.setItem("words", this.responseText);
 	parseWords(this.responseText);
 	conundrum.newGame();
 }
