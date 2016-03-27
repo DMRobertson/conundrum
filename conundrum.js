@@ -1,15 +1,6 @@
 "use strict";
-var conundrum = {
-	word: "",
-	words: [],
-	nineLetterWords: [],
-	tiles: [],
-	history: null,
-	
-	newGame: null,
-	newWord: null,
-	shuffle: null
-};
+
+// boring stuff we have to implement ourselves
 
 String.prototype.shuffle = function () {
 	var chars = this.split("");
@@ -27,10 +18,52 @@ function randomInt(min, max) {
 	return Math.floor(Math.random() * (max - min)) + min;
 }
 
+function usesLetters(candidate, source){
+	var candidateCount = charCount(candidate);
+	var sourceCount = charCount(source);
+	for (var char in candidateCount){
+		if (!candidateCount.hasOwnProperty(char)){ continue; }
+		if ( !(sourceCount.hasOwnProperty(char) && candidateCount[char] <= sourceCount[char]) ){
+			return false
+		}
+	}
+	return true
+}
+
+function charCount(word){
+	var count = {};
+	for (var i = 0; i < word.length; i++){
+		var char = word.charAt(i);
+		if (!count.hasOwnProperty(char)){
+			count[char] = 1;
+		} else {
+			count[char]++;
+		}
+	}
+	return count;
+}
+
+// Game data
+
+var conundrum = {
+	word: "",
+	words: [],
+	nineLetterWords: [],
+	tiles: [],
+	history: null,
+	score: 0,
+	
+	newGame: null,
+	newWord: null,
+	shuffle: null
+};
+
+
 conundrum.newGame = function () {
 	var index = randomInt(0, conundrum.nineLetterWords.length);
 	conundrum.word = conundrum.nineLetterWords[index].shuffle();
 	conundrum.newWord();
+	conundrum.score = 0;
 	conundrum.body.classList.remove("loading");
 }
 
@@ -44,6 +77,40 @@ conundrum.newWord = function () {
 conundrum.shuffle = function () {
 	conundrum.word = conundrum.word.shuffle();
 	conundrum.newWord();
+}
+
+conundrum.entry = function(e){
+	switch(e.keyCode){
+		case 32: //space
+			e.preventDefault();
+			break;
+		case 13: // enter
+			if (this.value !== ""){
+				conundrum.submit(this.value.toUpperCase());
+				this.value = "";
+			}
+			break;
+		return
+	}
+}
+
+conundrum.submit = function(word) {
+	//Is the word built using the given letters?
+	 if ( !usesLetters(word, conundrum.word) ){
+		 return
+	 }
+		
+	//If so, is the word actually a word?
+	if ( inSortedArray(word, conundrum.words) ){
+		conundrum.success(word);
+	}
+}
+
+conundrum.success = function(word){
+	conundrum.addHistory(word);
+	if (word.length === 9){
+		// todo: congratulate
+	}
 }
 
 conundrum.addHistory = function (entry) {
@@ -69,6 +136,7 @@ function setupDOM () {
 	conundrum.history = document.getElementById('history');
 	document.getElementById("shuffle").addEventListener("click", conundrum.shuffle)
 	document.getElementById("reset").addEventListener("click", conundrum.newGame)
+	document.getElementById("entry").addEventListener("keydown", conundrum.entry)
 }
 
 function getWordList () {
