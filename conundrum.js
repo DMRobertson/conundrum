@@ -43,19 +43,53 @@ function charCount(word){
 	return count;
 }
 
+function inSortedArray(target, array){
+	// a binary search
+	var left = 0;
+	var right = array.length - 1;
+	while (left <= right){
+		var mid = Math.floor( (left + right)/2 );
+		var candidate = array[mid];
+		if (target === candidate){
+			return true;
+		} else if (target < candidate){
+			right = mid - 1;
+		} else {
+			left = mid + 1;
+		}
+	}
+	return false;
+}
+
 // Game data
 
 var conundrum = {
+	//state
 	word: "",
 	words: [],
+	submittedWords: [], 
 	nineLetterWords: [],
-	tiles: [],
-	history: null,
 	score: 0,
+	points: 0,
 	
+	//functions
 	newGame: null,
 	newWord: null,
-	shuffle: null
+	shuffle: null,
+	addHistory: null,
+	clearHistory: null,
+	//callbacks
+	entry: null,
+	submit: null,
+	sucess: null,
+	//dom
+	body: null,
+	num_words: null,
+	num_points: null,
+	tiles: [],
+	history: null,
+	//config
+	maxHistory: 20
 };
 
 
@@ -67,8 +101,15 @@ conundrum.newGame = function () {
 	conundrum.body.classList.remove("loading");
 }
 
-conundrum.newWord = function () {
+conundrum.clearHistory = function () {
+	conundrum.submittedWords = [];
 	conundrum.history.innerHTML = "";
+	for (var i = 0; i < conundrum.maxHistory; i++){
+		conundrum.history.appendChild(document.createElement("div"));
+	}
+}
+
+conundrum.newWord = function () {
 	for (var i = 0; i < 9; i++){
 		conundrum.tiles[i].textContent = conundrum.word[i];
 	}
@@ -99,7 +140,12 @@ conundrum.submit = function(word) {
 	 if ( !usesLetters(word, conundrum.word) ){
 		 return
 	 }
-		
+	
+	//Have we already submitted this word?
+	if ( inSortedArray(word, conundrum.submittedWords) ){
+		return
+	}
+	
 	//If so, is the word actually a word?
 	if ( inSortedArray(word, conundrum.words) ){
 		conundrum.success(word);
@@ -108,17 +154,24 @@ conundrum.submit = function(word) {
 
 conundrum.success = function(word){
 	conundrum.addHistory(word);
+	conundrum.score += 1;
+	conundrum.num_points.textContent = conundrum.points;
+	conundrum.num_words.textContent  = conundrum.submittedWords.length;
 	if (word.length === 9){
 		// todo: congratulate
 	}
 }
 
 conundrum.addHistory = function (entry) {
+	conundrum.submittedWords.push(entry);
+	conundrum.submittedWords.sort();
+	conundrum.points += entry.length;
+	
 	var div = document.createElement("div");
 	div.textContent = entry;
 	conundrum.history.appendChild(div);
 	var divs = conundrum.history.getElementsByTagName("div");
-	for (var i = 0; i < divs.length - 10; i++){
+	for (var i = 0; i < divs.length - 20; i++){
 		conundrum.history.removeChild(divs[i]);
 	}
 }
@@ -134,6 +187,8 @@ function setupDOM () {
 	conundrum.body = document.getElementsByTagName("body")[0];
 	conundrum.tiles = document.getElementsByClassName('letter');
 	conundrum.history = document.getElementById('history');
+	conundrum.num_points = document.getElementById('num_points');
+	conundrum.num_words = document.getElementById('num_words');
 	document.getElementById("shuffle").addEventListener("click", conundrum.shuffle)
 	document.getElementById("reset").addEventListener("click", conundrum.newGame)
 	document.getElementById("entry").addEventListener("keydown", conundrum.entry)
