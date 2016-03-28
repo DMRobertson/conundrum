@@ -79,11 +79,13 @@ var conundrum = {
 	addHistory: null,
 	clearHistory: null,
 	//callbacks
-	entry: null,
+	keydown: null,
 	submit: null,
 	sucess: null,
+	highlight: null,
 	//dom
 	body: null,
+	entry: null,
 	num_words: null,
 	num_points: null,
 	tiles: [],
@@ -91,7 +93,6 @@ var conundrum = {
 	//config
 	maxHistory: 20
 };
-
 
 conundrum.newGame = function () {
 	var index = randomInt(0, conundrum.nineLetterWords.length);
@@ -118,9 +119,30 @@ conundrum.newWord = function () {
 conundrum.shuffle = function () {
 	conundrum.word = conundrum.word.shuffle();
 	conundrum.newWord();
+	conundrum.highlight();
 }
 
-conundrum.entry = function(e){
+conundrum.highlight = function () {
+	var value = conundrum.entry.value.toUpperCase();
+	if (!usesLetters(value, conundrum.word) ){
+		conundrum.entry.classList.add("invalid");
+	} else {
+		conundrum.entry.classList.remove("invalid");
+	}
+	
+	var count = charCount(value);
+	for (var i = 0; i < 9; i++) {
+		var char = conundrum.word.charAt(i);
+		if (count.hasOwnProperty(char) && count[char] > 0){
+			count[char]--;
+			conundrum.tiles[i].classList.add("used");
+		} else {
+			conundrum.tiles[i].classList.remove("used");
+		}
+	}
+}
+
+conundrum.keydown = function(e){
 	switch(e.keyCode){
 		case 32: //space
 			e.preventDefault();
@@ -129,6 +151,7 @@ conundrum.entry = function(e){
 			if (this.value !== ""){
 				conundrum.submit(this.value.toUpperCase());
 				this.value = "";
+				this.dispatchEvent(new Event('input'));
 			}
 			break;
 		return
@@ -158,7 +181,7 @@ conundrum.success = function(word){
 	conundrum.num_points.textContent = conundrum.points;
 	conundrum.num_words.textContent  = conundrum.submittedWords.length;
 	if (word.length === 9){
-		// todo: congratulate
+		conundrum.body.classList.add("solved");
 	}
 }
 
@@ -189,9 +212,11 @@ function setupDOM () {
 	conundrum.history = document.getElementById('history');
 	conundrum.num_points = document.getElementById('num_points');
 	conundrum.num_words = document.getElementById('num_words');
+	conundrum.entry = document.getElementById("entry");
+	conundrum.entry.addEventListener("keydown", conundrum.keydown);
+	conundrum.entry.addEventListener("input", conundrum.highlight);
 	document.getElementById("shuffle").addEventListener("click", conundrum.shuffle)
 	document.getElementById("reset").addEventListener("click", conundrum.newGame)
-	document.getElementById("entry").addEventListener("keydown", conundrum.entry)
 }
 
 function getWordList () {
@@ -212,6 +237,7 @@ function gotWordList() {
 	localStorage.setItem("words", this.responseText);
 	parseWords(this.responseText);
 	conundrum.newGame();
+	conundrum.body.classList.remove("solved");
 }
 
 function parseWords(string){
