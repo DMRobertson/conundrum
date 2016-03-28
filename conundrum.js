@@ -100,14 +100,11 @@ conundrum.newGame = function () {
 	conundrum.newWord();
 	conundrum.score = 0;
 	conundrum.body.classList.remove("loading");
+	conundrum.entry.focus();
 }
 
 conundrum.clearHistory = function () {
 	conundrum.submittedWords = [];
-	conundrum.history.innerHTML = "";
-	for (var i = 0; i < conundrum.maxHistory; i++){
-		conundrum.history.appendChild(document.createElement("div"));
-	}
 }
 
 conundrum.newWord = function () {
@@ -120,6 +117,7 @@ conundrum.shuffle = function () {
 	conundrum.word = conundrum.word.shuffle();
 	conundrum.newWord();
 	conundrum.highlight();
+	conundrum.entry.focus();
 }
 
 conundrum.highlight = function () {
@@ -189,14 +187,6 @@ conundrum.addHistory = function (entry) {
 	conundrum.submittedWords.push(entry);
 	conundrum.submittedWords.sort();
 	conundrum.points += entry.length;
-	
-	var div = document.createElement("div");
-	div.textContent = entry;
-	conundrum.history.appendChild(div);
-	var divs = conundrum.history.getElementsByTagName("div");
-	for (var i = 0; i < divs.length - 20; i++){
-		conundrum.history.removeChild(divs[i]);
-	}
 }
 
 // main function
@@ -209,7 +199,6 @@ function main() {
 function setupDOM () {
 	conundrum.body = document.getElementsByTagName("body")[0];
 	conundrum.tiles = document.getElementsByClassName('letter');
-	conundrum.history = document.getElementById('history');
 	conundrum.num_points = document.getElementById('num_points');
 	conundrum.num_words = document.getElementById('num_words');
 	conundrum.entry = document.getElementById("entry");
