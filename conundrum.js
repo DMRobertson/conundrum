@@ -78,6 +78,7 @@ var conundrum = {
 	shuffle: null,
 	addHistory: null,
 	clearHistory: null,
+	updateScore: null,
 	//callbacks
 	keydown: null,
 	submit: null,
@@ -99,14 +100,17 @@ conundrum.newGame = function () {
 	var index = randomInt(0, conundrum.nineLetterWords.length);
 	conundrum.word = conundrum.nineLetterWords[index].shuffle();
 	conundrum.newWord();
-	conundrum.score = 0;
 	conundrum.body.classList.remove("loading");
 	conundrum.clearEntry();
+	conundrum.clearHistory();
 	conundrum.entry.focus();
 }
 
 conundrum.clearHistory = function () {
 	conundrum.submittedWords = [];
+	conundrum.score = 0;
+	conundrum.points = 0;
+	conundrum.updateScore();
 }
 
 conundrum.newWord = function () {
@@ -178,11 +182,15 @@ conundrum.submit = function(word) {
 conundrum.success = function(word){
 	conundrum.addHistory(word);
 	conundrum.score += 1;
-	conundrum.num_points.textContent = conundrum.points;
-	conundrum.num_words.textContent  = conundrum.submittedWords.length;
+	conundrum.updateScore();
 	if (word.length === 9){
 		conundrum.body.classList.add("solved");
 	}
+}
+
+conundrum.updateScore = function(){
+	conundrum.num_points.textContent = conundrum.points;
+	conundrum.num_words.textContent  = conundrum.submittedWords.length;
 }
 
 conundrum.addHistory = function (entry) {
