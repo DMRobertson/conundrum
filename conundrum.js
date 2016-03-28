@@ -83,6 +83,7 @@ var conundrum = {
 	submit: null,
 	sucess: null,
 	highlight: null,
+	clearEntry: null,
 	//dom
 	body: null,
 	entry: null,
@@ -100,6 +101,7 @@ conundrum.newGame = function () {
 	conundrum.newWord();
 	conundrum.score = 0;
 	conundrum.body.classList.remove("loading");
+	conundrum.clearEntry();
 	conundrum.entry.focus();
 }
 
@@ -189,6 +191,12 @@ conundrum.addHistory = function (entry) {
 	conundrum.points += entry.length;
 }
 
+conundrum.clearEntry = function(){
+	conundrum.entry.value = "";
+	var event = new Event("input");
+	conundrum.entry.dispatchEvent(event);
+}
+
 // main function
 
 function main() {
@@ -204,8 +212,9 @@ function setupDOM () {
 	conundrum.entry = document.getElementById("entry");
 	conundrum.entry.addEventListener("keydown", conundrum.keydown);
 	conundrum.entry.addEventListener("input", conundrum.highlight);
-	document.getElementById("shuffle").addEventListener("click", conundrum.shuffle)
-	document.getElementById("reset").addEventListener("click", conundrum.newGame)
+	document.getElementById("clear").addEventListener("click", conundrum.clearEntry);
+	document.getElementById("shuffle").addEventListener("click", conundrum.shuffle);
+	document.getElementById("reset").addEventListener("click", conundrum.newGame);
 }
 
 function getWordList () {
